@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE sqlMap PUBLIC "-//ibatis.apache.org/DTD SQL Map 2.0//EN"
+  "http://ibatis.apache.org/dtd/sql-map-2.dtd">
+<sqlMap namespace="product">
+    
+    <typeAlias alias="product" type="org.ibatis.spring.beans.Product"/>
+    
+    <resultMap class="product" id="result">
+        
+        <result property="id" column="id" jdbcType="int"/>
+        <result property="name" column="name" jdbcType="varchar"/>
+    </resultMap>
+    
+   
+    
+    <select id="getProduct" resultMap="result">
+        select * from product where id=#value#
+    </select>
+    
+    <parameterMap class="product" id="addProductMap">
+        <parameter property="id" jdbcType="int"/>
+        <parameter property="name" jdbcType="varchar"/>
+        
+    </parameterMap>
+    
+    <insert id="addProduct" parameterMap="addProductMap">
+        insert into product (
+            id,
+            name
+        )values(
+            ?,?
+        )
+    </insert>
+    
+    
+    
+</sqlMap>

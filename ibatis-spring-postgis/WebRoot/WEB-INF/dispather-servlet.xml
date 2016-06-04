@@ -1,0 +1,137 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:p="http://www.springframework.org/schema/p"
+	xmlns:context="http://www.springframework.org/schema/context"
+	xsi:schemaLocation="
+        http://www.springframework.org/schema/beans 
+        http://www.springframework.org/schema/beans/spring-beans-2.5.xsd
+        http://www.springframework.org/schema/context 
+        http://www.springframework.org/schema/context/spring-context-2.5.xsd">
+
+	<!-- /test.go?action=method01 -->
+	<!-- multiActionController -->
+	<bean id="simpleUrlMapping"
+		class="org.springframework.web.servlet.handler.SimpleUrlHandlerMapping">
+
+		<property name="mappings">
+			<props>
+				<prop key="/test.go">mvController</prop>
+			</props>
+		</property>
+
+	</bean>
+
+
+	<bean id="methodNameResolver"
+		class="org.springframework.web.servlet.mvc.multiaction.ParameterMethodNameResolver">
+
+		<property name="paramName">
+			<value>action</value>
+		</property>
+	</bean>
+
+
+	<!-- /method01.go -->
+	<!-- <bean id="simpleUrlMapping" class="org.springframework.web.servlet.handler.SimpleUrlHandlerMapping"> 
+		<property name="defaultHandler" ref="mvController"></property> </bean> <bean 
+		id="methodNameResolver" class="org.springframework.web.servlet.mvc.multiaction.PropertiesMethodNameResolver"> 
+		<property name="mappings"> <props> <prop key="/method01.go">method01</prop> 
+		</props> </property> </bean> -->
+
+	<bean id="mvController" class="org.ibatis.spring.controller.MVController">
+		<property name="methodNameResolver">
+			<ref bean="methodNameResolver" />
+		</property>
+	</bean>
+
+
+	<!-- /test.html /login.html -->
+	<bean id="beanNameUrlMapping"
+		class="org.springframework.web.servlet.handler.BeanNameUrlHandlerMapping">
+
+	</bean>
+
+	<!-- controller -->
+	<bean name="/test.html" class="org.ibatis.spring.controller.TestController"></bean>
+
+
+	<!-- SimpleFormController -->
+	<bean name="/login.html" class="org.ibatis.spring.controller.LoginController">
+		<property name="commandName" value="user" />
+		<property name="commandClass" value="org.ibatis.spring.beans.User"></property>
+		<property name="formView" value="login"></property>
+		<property name="successView" value="loginSuccess"></property>
+	</bean>
+
+
+
+    
+	<bean id="viewResolver"
+		class="org.springframework.web.servlet.view.InternalResourceViewResolver">
+		<property name="order" value="2" />
+
+		<property name="viewClass"
+			value="org.springframework.web.servlet.view.JstlView"></property>
+		<property name="prefix" value="/"></property>
+		<property name="suffix" value=".jsp"></property>
+	</bean> 
+	
+	<!--  
+	<context:component-scan base-package="org.**.controller"/>
+	
+	<bean class="org.springframework.web.servlet.mvc.annotation.DefaultAnnotationHandlerMapping"/>
+
+    <bean class="org.springframework.web.servlet.mvc.annotation.AnnotationMethodHandlerAdapter"/>
+
+    
+	<bean
+		class="org.springframework.web.servlet.view.ContentNegotiatingViewResolver">
+		
+	    <property name="order" value="1" />
+		<property name="ignoreAcceptHeader" value="true" />
+		
+		<property name="defaultContentType" value="text/html" /> 
+
+		<property name="mediaTypes">
+			<map>
+				<entry key="json" value="application/json" />
+				<entry key="xml" value="application/xml" />
+			</map>
+		</property>
+
+		<property name="favorParameter" value="false" />
+		
+		<property name="viewResolvers">
+			<list>
+				<bean class="org.springframework.web.servlet.view.BeanNameViewResolver" />
+				<bean
+					class="org.springframework.web.servlet.view.InternalResourceViewResolver">
+					<property name="viewClass"
+						value="org.springframework.web.servlet.view.JstlView" />
+					<property name="prefix" value="/pages" />
+					<property name="suffix" value=".jsp"></property>
+				</bean>
+			</list>
+		</property>
+		
+		<property name="defaultViews">
+			<list>
+
+				<bean
+					class="org.springframework.web.servlet.view.json.MappingJacksonJsonView" />
+
+				<bean class="org.springframework.web.servlet.view.xml.MarshallingView">
+					<property name="marshaller">
+						<bean class="org.springframework.oxm.xstream.XStreamMarshaller" />
+					</property>
+				</bean>
+			</list>
+		</property>
+	</bean> -->
+	
+	 
+
+
+
+
+</beans>

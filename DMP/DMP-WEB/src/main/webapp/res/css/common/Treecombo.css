@@ -1,0 +1,21 @@
+.complete{ text-decoration: line-through;}
+.x-tree-node-collapsed .x-tree-node-icon, .x-tree-node-expanded .x-tree-node-icon, .x-tree-node-leaf .x-tree-node-icon{
+	border: 0 none;
+	height: 18px;
+	margin: 0;
+	padding: 0;
+	vertical-align: top;
+	width: 0px;
+	background-position:center;
+    background-repeat: no-repeat;
+}
+.treeCombo .x-panel-btns {
+    padding:5px;
+    overflow:hidden;
+    background-image: url("../../images/common/default/panel/white-top-bottom.gif");
+   // background-color: #FFFFFF;
+    
+}
+ #treePanel .x-panel-header{
+   display: none;
+ }

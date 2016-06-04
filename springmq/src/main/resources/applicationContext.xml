@@ -1,0 +1,183 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:aop="http://www.springframework.org/schema/aop"
+	xmlns:tx="http://www.springframework.org/schema/tx" xmlns:context="http://www.springframework.org/schema/context"
+	xmlns:hdp="http://www.springframework.org/schema/hadoop" xmlns:p="http://www.springframework.org/schema/p"
+	xmlns:util="http://www.springframework.org/schema/util" xmlns:mvc="http://www.springframework.org/schema/mvc"
+	xmlns:cache="http://www.springframework.org/schema/cache" xmlns:amq="http://activemq.apache.org/schema/core"
+	xsi:schemaLocation="
+       http://www.springframework.org/schema/beans 
+       http://www.springframework.org/schema/beans/spring-beans-3.2.xsd
+       http://www.springframework.org/schema/aop 
+       http://www.springframework.org/schema/aop/spring-aop-3.2.xsd
+       http://www.springframework.org/schema/tx 
+       http://www.springframework.org/schema/tx/spring-tx-3.2.xsd
+       http://www.springframework.org/schema/mvc 
+       http://www.springframework.org/schema/mvc/spring-mvc-3.2.xsd
+       http://www.springframework.org/schema/context 
+       http://www.springframework.org/schema/context/spring-context-3.2.xsd
+       http://www.springframework.org/schema/util 
+       http://www.springframework.org/schema/util/spring-util-3.2.xsd
+       http://www.springframework.org/schema/cache 
+       http://www.springframework.org/schema/cache/spring-cache-3.2.xsd
+       http://activemq.apache.org/schema/core  
+       http://activemq.apache.org/schema/core/activemq-core.xsd">
+    <!--  
+	<amq:broker brokerName="myBroker" >
+	    <amq:persistenceAdapter>
+	        <amq:jdbcPersistenceAdapter dataSource="#MySQL-DS" />
+	    </amq:persistenceAdapter>
+		<amq:transportConnectors>
+			<amq:transportConnector name="openwire"
+				uri="tcp://localhost:61616" />
+		</amq:transportConnectors>
+		<amq:plugins>
+			<amq:simpleAuthenticationPlugin>
+				<amq:users>
+					<amq:authenticationUser username="admin"
+						password="password" groups="admins,publishers,consumers" />
+					<amq:authenticationUser username="publisher"
+						password="password" groups="publishers,consumers" />
+					<amq:authenticationUser username="consumer"
+						password="password" groups="consumers" />
+					<amq:authenticationUser username="guest"
+						password="password" groups="guests" />
+				</amq:users>
+			</amq:simpleAuthenticationPlugin>
+		</amq:plugins>
+	</amq:broker>
+
+	<bean id="MySQL-DS" class="org.apache.commons.dbcp.BasicDataSource"
+		destroy-method="close">
+		<property name="driverClassName" value="com.mysql.jdbc.Driver" />
+		<property name="url"
+			value="jdbc:mysql://127.0.0.1:3306/activemqforspring?useUnicode=true&amp;characterEncoding=UTF-8" />
+		<property name="username" value="root" />
+		<property name="password" value="123456" />
+		<property name="poolPreparedStatements" value="true" />
+	</bean>-->
+	
+	<bean id="broker" class="org.apache.activemq.xbean.BrokerFactoryBean">  
+        <property name="config" value="classpath:activemq.xml" />  
+        <property name="start" value="true"></property>  
+    </bean>  
+
+
+	<mvc:annotation-driven />
+	<context:component-scan base-package="com.springmq" />
+
+	<bean
+		class="org.springframework.web.servlet.mvc.annotation.DefaultAnnotationHandlerMapping" />
+	<bean
+		class="org.springframework.web.servlet.mvc.annotation.AnnotationMethodHandlerAdapter">
+	</bean>
+	<!-- <bean id="connectionFactory" class="org.apache.activemq.ActiveMQConnectionFactory"> 
+		<property name="brokerURL" value="tcp://localhost:61616" /> </bean> -->
+
+	<bean id="taskExecutor"
+		class="org.springframework.scheduling.concurrent.ThreadPoolTaskExecutor">
+		<!-- 核心线程数，默认为1 -->
+		<property name="corePoolSize" value="5" />
+		<!-- 最大线程数，默认为Integer.MAX_VALUE -->
+		<property name="maxPoolSize" value="5" />
+		<!-- 队列最大长度，一般需要设置值>=notifyScheduledMainExecutor.maxNum；默认为Integer.MAX_VALUE -->
+		<property name="queueCapacity" value="1000" />
+		<!-- 线程池维护线程所允许的空闲时间，默认为60s -->
+		<property name="keepAliveSeconds" value="300" />
+		<!-- 线程池对拒绝任务（无线程可用）的处理策略，目前只支持AbortPolicy、CallerRunsPolicy；默认为后者 -->
+		<property name="rejectedExecutionHandler">
+			<!-- AbortPolicy:直接抛出java.util.concurrent.RejectedExecutionException异常 -->
+			<!-- CallerRunsPolicy:主线程直接执行该任务，执行完之后尝试添加下一个任务到线程池中，可以有效降低向线程池内添加任务的速度 -->
+			<!-- DiscardOldestPolicy:抛弃旧的任务、暂不支持；会导致被丢弃的任务无法再次被执行 -->
+			<!-- DiscardPolicy:抛弃当前任务、暂不支持；会导致被丢弃的任务无法再次被执行 -->
+			<bean class="java.util.concurrent.ThreadPoolExecutor$CallerRunsPolicy" />
+		</property>
+	</bean>
+
+	<bean id="connectionFactory" class="org.apache.activemq.pool.PooledConnectionFactory">
+		<property name="connectionFactory">
+			<bean class="org.apache.activemq.ActiveMQConnectionFactory">
+				<property name="brokerURL" value="tcp://localhost:61616" />
+				<property name="closeTimeout" value="60000" />
+
+				<property name="userName" value="admin" />
+				<property name="password" value="password" />
+				<!--<property name="optimizeAcknowledge" value="true" /> -->
+				<property name="optimizedAckScheduledAckInterval" value="10000" />
+			</bean>
+		</property>
+	</bean>
+
+	<bean id="cachingConnectionFactory"
+		class="org.springframework.jms.connection.CachingConnectionFactory">
+		<!-- 目标ConnectionFactory对应真实的可以产生JMS Connection的ConnectionFactory -->
+		<property name="targetConnectionFactory" ref="connectionFactory"></property>
+		<!-- Session缓存数量 -->
+		<property name="sessionCacheSize" value="10"></property>
+		<property name="clientId" value="clientA" />  
+	</bean>
+
+	<bean id="jmsTemplate" class="org.springframework.jms.core.JmsTemplate">
+		<property name="connectionFactory" ref="cachingConnectionFactory" />
+		<property name="deliveryMode" value="2" />
+	</bean>
+
+	<bean id="messageConverter" class="com.springmq.common.ObjectMessageConverter"></bean>
+
+	<!-- Queue队列：仅有一个订阅者会收到消息，消息一旦被处理就不会存在队列中 -->
+	<bean id="queueDestination" class="org.apache.activemq.command.ActiveMQQueue">
+		<constructor-arg index="0" value="test" />
+	</bean>
+
+	<bean id="queueMessageListener" class="com.springmq.module.queue.QueueMessageListener">
+		<property name="objectMessageConverter" ref="messageConverter" />
+	</bean>
+
+	<bean id="queueContainer"
+		class="org.springframework.jms.listener.DefaultMessageListenerContainer">
+		<property name="connectionFactory" ref="cachingConnectionFactory"></property>
+		<property name="destination" ref="queueDestination"></property>
+		<property name="messageListener" ref="queueMessageListener"></property>
+	</bean>
+
+	<bean id="queueMessageProducer" class="com.springmq.module.queue.QueueMessageProducer">
+		<property name="jmsTemplate" ref="jmsTemplate"></property>
+		<property name="queueDestination" ref="queueDestination"></property>
+		<property name="objectMessageConverter" ref="messageConverter"></property>
+	</bean>
+
+	<!-- topic -->
+
+	<bean id="topicDestination" class="org.apache.activemq.command.ActiveMQTopic">
+		<!-- <constructor-arg index="0" value="t.topic" /> -->
+		<constructor-arg index="0" value="test" />
+	</bean>
+
+	<bean id="topicMessageListener" class="com.springmq.module.topic.TopicMessageListener">
+		<property name="objectMessageConverter" ref="messageConverter" />
+	</bean>
+
+	<bean id="topicContainer"
+		class="org.springframework.jms.listener.DefaultMessageListenerContainer">
+		<property name="connectionFactory" ref="cachingConnectionFactory"></property>
+		<property name="destination" ref="topicDestination"></property>
+		<property name="messageListener" ref="topicMessageListener"></property>
+		<property name="subscriptionDurable" value="true"/> 
+		<!-- 接收者ID -->  
+        <property name="clientId" value="clientA" />  
+        <!-- 这里名字可以任意改变，A 领取了，你可以改成B 还可以领取，可以举例不是很恰当 -->  
+        <property name="durableSubscriptionName" value="clientA"/>  
+	</bean>
+
+	<bean id="topicMessageProducer" class="com.springmq.module.topic.TopicMessageProducer">
+		<property name="jmsTemplate" ref="jmsTemplate"></property>
+		<property name="topicDestination" ref="topicDestination"></property>
+		<property name="objectMessageConverter" ref="messageConverter"></property>
+	</bean>
+
+
+
+</beans>
+
+
+

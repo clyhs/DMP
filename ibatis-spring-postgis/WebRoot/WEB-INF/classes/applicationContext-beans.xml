@@ -1,0 +1,39 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:aop="http://www.springframework.org/schema/aop"
+	xmlns:tx="http://www.springframework.org/schema/tx"
+	xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-2.0.xsd
+           http://www.springframework.org/schema/aop http://www.springframework.org/schema/aop/spring-aop-2.0.xsd
+           http://www.springframework.org/schema/tx http://www.springframework.org/schema/tx/spring-tx-2.0.xsd">
+
+	<bean id="component" class="org.restlet.ext.spring.SpringComponent">
+		<property name="defaultTarget" ref="root" />
+		
+	</bean>
+	<bean id="root" class="org.restlet.ext.spring.SpringRouter">
+		<property name="attachments">
+			<map>
+				<entry key="/customers/{custId}">
+					<bean class="org.restlet.ext.spring.SpringFinder">
+						<lookup-method name="createResource" bean="customerResource" />
+					</bean>
+				</entry>
+				
+				<entry key="/orders/{orderId}/{subOrderId}">
+				    <bean class="org.restlet.ext.spring.SpringFinder">
+				        <lookup-method name="createResource" bean="orderResource" />
+				    </bean>
+				</entry> 
+			</map>
+		</property>
+	</bean>
+
+	<bean id="customerResource" class="org.web.rest.CustomerResource"  scope="prototype">
+
+	</bean>
+	
+	
+	<bean id="orderResource" class="org.web.rest.OrderResource" scope="prototype"></bean>
+
+
+</beans>

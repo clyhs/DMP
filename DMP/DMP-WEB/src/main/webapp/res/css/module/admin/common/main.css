@@ -1,0 +1,124 @@
+.TabIcons{
+	background-image:url(../../../../../res/images/common/icons/tab.gif) !important;
+}
+
+.search{
+	background-image:url(../../../../../res/images/common/icons/search.gif) !important;
+}
+
+.add{
+	background-image:url(../../../../../res/images/common/icons/add.gif) !important;
+}
+
+.look{
+	background-image:url(../../../../../res/images/common/icons/view.gif) !important;
+}
+
+.edit_icon{
+	background-image:url(../../../../../res/images/common/icons/edit.gif) !important;
+}
+
+.del{
+	background-image:url(../../../../../res/images/common/icons/del.gif) !important;
+}
+
+.help{
+	background-image:url(../../../../../res/images/common/icons/help.gif) !important;
+}
+
+.preview{
+	background-image:url(../../../../../res/images/common/icons/preview.gif) !important;
+}
+
+.cdel{
+	background-image:url(../../../../../res/images/common/icons/cdel.png) !important;
+}
+
+.form{
+	background-image:url(../../../../../res/images/common/icons/form.png) !important;
+}
+
+.save{
+	background-image:url(../../../../../res/images/common/icons/save.gif) !important;
+}
+
+.exit{
+	background-image:url(../../../../../res/images/common/icons/exit.gif) !important;
+}
+
+.reset{
+	background-image:url(../../../../../res/images/common/icons/preview.gif) !important;
+}
+
+.refresh{
+	background-image:url(../../../../../res/images/common/icons/refresh.gif) !important;
+}
+
+.close{
+	background-image:url(../../../../../res/images/common/icons/close.gif) !important;
+}
+.x-grid-panel{
+	border-right:1px solid #99BBE8;
+}
+.excel{
+	background-image:url(../../../../../res/images/common/icons/excel.gif) !important;
+}
+.bgIndex{
+	background-image:url(../../../../../res/images/module/bglogin/index_bg.png) !important;
+}
+.check{
+	background-image:url(../../../../../res/images/common/icons/check.gif) !important;
+}
+.chart{
+	background-image:url(../../../../../res/images/common/icons/chart.png) !important;
+}
+.pieChartWindow span.x-tab-strip-text{
+	background-image:url(../../../../../res/images/common/icons/pieChart.png);
+	background-position: 0% 50%;
+	background-repeat: no-repeat;
+	padding-left: 20px;
+	padding-top: 7px;
+	font-size: 12px;
+}
+.pieChartWindow .x-tab-edge span.x-tab-strip-text{
+	background-image:url();
+}
+.pause{
+	background-image:url(../../../../../res/images/common/icons/pause.png) !important;
+}
+.resume{
+	background-image:url(../../../../../res/images/common/icons/resume.png) !important;
+}
+.run{
+	background-image:url(../../../../../res/images/common/icons/run.gif) !important;
+}
+.down{
+	background-image:url(../../../../../res/images/common/icons/down.gif) !important;
+}
+.quota{
+	background-image:url(../../../../../res/images/common/icons/cog.png) !important;
+}
+.excel2{
+	background-image:url(../../../../../res/images/common/icons/excel2.gif) !important;
+}
+.config{
+	background-image:url(../../../../../res/images/common/icons/config.png) !important;
+}
+.x-tree-node-el .role-tree{
+	background-image:url(../../../../../res/images/common/icons/role.gif) !important;
+}
+
+.tabPieChartIcon{
+	background-image:url(../../../../../res/images/common/icons/pieChart.png);
+	background-position: 0% 50%;
+	background-repeat: no-repeat;
+	padding-left: 20px;
+	padding-top: 7px;
+	font-size: 12px;
+}
+td.ux-grid-hd-group-cell {
+	background: url(../../../../../res/images/common/default/grid/grid3-hrow.gif) repeat-x bottom;
+}
+.fileUp{
+	background-image:url(../../../../../res/images/common/icons/file_up.png) !important;
+}

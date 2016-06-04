@@ -1,0 +1,70 @@
+
+.ux-carousel-container {
+    overflow: hidden;
+    position: relative;
+}
+.ux-carousel-slides-wrap {
+    left: 0;
+    position: absolute;
+    top: 0;
+}
+.ux-carousel-slide {
+    float: left;
+    overflow: hidden;
+    text-align: center;
+}
+.ux-carousel-nav {
+    background-color: #D1CCC7;
+    height: 25px;
+    left: 0;
+    opacity: 0.7;
+    position: absolute;
+    top: 0;
+    width: 100%;
+}
+.ux-carousel-caption {
+    color: black;
+    float: left;
+    font-size: 20px;
+    height: 24px;
+    margin: 0;
+    overflow: hidden;
+    padding: 0 0;
+    text-transform: none;
+    width: 100px;
+}
+.ux-carousel-nav-prev, .ux-carousel-nav-next, .ux-carousel-nav-play {
+    background-position: 0 24px;
+    display: block;
+    float: right;
+    height: 24px;
+    margin: 0px 0;
+}
+.ux-carousel-nav .ux-carousel-nav-prev {
+    background-image: url("../../images/common/default/scroller/prev.png");
+    width: 31px;
+}
+.ux-carousel-nav .ux-carousel-nav-next {
+    background-image: url("../../images/common/default/scroller/next.png");
+    margin-right: 2px;
+    width: 30px;
+}
+.ux-carousel-nav-play {
+    background-image: url("../../images/common/default/scroller/play_pause.png");
+    width: 24px;
+}
+.ux-carousel-nav-play:hover {
+    background-position: 0 0;
+}
+.ux-carousel-nav-play.ux-carousel-playing {
+    background-position: 24px 24px;
+}
+.ux-carousel-nav-play.ux-carousel-playing:hover {
+    background-position: 24px 0;
+}
+.ux-carousel-nav-prev:hover, .ux-carousel-nav-next:hover {
+    background-position: 0 48px;
+}
+.ux-carousel-nav-prev.ux-carousel-nav-disabled, .ux-carousel-nav-next.ux-carousel-nav-disabled {
+    background-position: 0 0;
+}

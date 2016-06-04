@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project-module
+  type="WEB"
+  name="ibatis-spring-postgis"
+  id="myeclipse.1355820434526"
+  context-root="/ibatis-spring"
+  j2ee-spec="5.0"
+  archive="ibatis-spring-postgis.war">
+  <attributes>
+    <attribute name="webrootdir" value="WebRoot" />
+  </attributes>
+</project-module>
+

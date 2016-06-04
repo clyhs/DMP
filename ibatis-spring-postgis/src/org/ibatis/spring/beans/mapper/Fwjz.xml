@@ -1,0 +1,39 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE sqlMap PUBLIC "-//ibatis.apache.org/DTD SQL Map 2.0//EN"
+  "http://ibatis.apache.org/dtd/sql-map-2.dtd">
+<sqlMap namespace="fwjz">
+    
+    <typeAlias alias="fwjz" type="org.ibatis.spring.beans.Fwjz"/>
+    
+    <resultMap class="fwjz" id="result">
+        
+        <result property="id" column="id" jdbcType="int"/>
+        <result property="name" column="name" jdbcType="varchar"/>
+        <result property="point" column="geom" jdbcType="geometry" typeHandler="org.ibatis.spring.typehandler.PointTypeHandlerCallback"/>
+    </resultMap>
+    
+    <select id="getFwjz" resultMap="result">
+        select id,name,asText(geom) as geom from fwjz where id=#value#
+    </select>
+    
+    
+    <parameterMap class="fwjz" id="addFwjzMap">
+        <parameter property="id" jdbcType="int"/>
+        <parameter property="name" jdbcType="varchar"/>
+        <parameter property="point" jdbcType="geometry" typeHandler="org.ibatis.spring.typehandler.PointTypeHandlerCallback" />
+        
+    </parameterMap>
+    
+    <insert id="addFwjz" parameterMap="addFwjzMap">
+        insert into fwjz (
+            id,
+            name,
+            geom
+        )values(
+            ?,?,ST_GeometryFromText(?,4326)
+        )
+    </insert>
+    
+    
+    
+</sqlMap>

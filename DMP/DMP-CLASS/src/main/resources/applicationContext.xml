@@ -1,0 +1,226 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:aop="http://www.springframework.org/schema/aop"
+	xmlns:tx="http://www.springframework.org/schema/tx" xmlns:context="http://www.springframework.org/schema/context"
+	xmlns:hdp="http://www.springframework.org/schema/hadoop" xmlns:p="http://www.springframework.org/schema/p"
+	xmlns:util="http://www.springframework.org/schema/util" xmlns:mvc="http://www.springframework.org/schema/mvc"
+	xmlns:cache="http://www.springframework.org/schema/cache"
+	xsi:schemaLocation="
+       http://www.springframework.org/schema/beans 
+       http://www.springframework.org/schema/beans/spring-beans-3.2.xsd
+       http://www.springframework.org/schema/aop 
+       http://www.springframework.org/schema/aop/spring-aop-3.2.xsd
+       http://www.springframework.org/schema/tx 
+       http://www.springframework.org/schema/tx/spring-tx-3.2.xsd
+       http://www.springframework.org/schema/mvc 
+       http://www.springframework.org/schema/mvc/spring-mvc-3.2.xsd
+       http://www.springframework.org/schema/context 
+       http://www.springframework.org/schema/context/spring-context-3.2.xsd
+       http://www.springframework.org/schema/util 
+       http://www.springframework.org/schema/util/spring-util-3.2.xsd
+       http://www.springframework.org/schema/cache 
+       http://www.springframework.org/schema/cache/spring-cache-3.2.xsd"
+       >
+
+    <mvc:annotation-driven />
+	<context:component-scan base-package="org.dmp" />
+
+	<bean
+		class="org.springframework.web.servlet.mvc.annotation.DefaultAnnotationHandlerMapping" />
+	<bean
+		class="org.springframework.web.servlet.mvc.annotation.AnnotationMethodHandlerAdapter">
+	</bean>
+	
+	<bean id="propertyConfigurer"
+		class="org.springframework.beans.factory.config.PropertyPlaceholderConfigurer">
+		<property name="locations">
+			<list>
+				<value>classpath:config.properties</value>
+				<value>classpath:jdbc.properties</value>
+				<value>classpath:hbase.properties</value>
+				<value>classpath:hadoop.properties</value>
+				<value>classpath:hive.properties</value>
+			</list>
+		</property>
+	</bean>
+
+    <!-- upload file -->
+	<bean id="multipartResolver"
+		class="org.springframework.web.multipart.commons.CommonsMultipartResolver" />
+	
+	
+	<bean id="dataSource" class="com.mchange.v2.c3p0.ComboPooledDataSource"
+		destroy-method="close">
+		<property name="driverClass" value="${db.driver}" />
+
+
+		<property name="jdbcUrl" value="${db.url}" />
+
+		<property name="user" value="${db.username}" />
+		<property name="password" value="${db.password}" />
+		<property name="autoCommitOnClose" value="true" />
+		<property name="minPoolSize" value="3" />
+		<property name="maxPoolSize" value="3" />
+		<property name="initialPoolSize" value="3" />
+		<property name="maxIdleTime" value="30" />
+		<property name="maxStatements" value="0"/>
+		<property name="checkoutTimeout" value="20000"/>
+		
+	</bean>
+
+
+
+	<!-- JDBC -->
+	<bean id="jdbcTemplate" class="org.springframework.jdbc.core.JdbcTemplate"
+		scope="prototype">
+		<property name="dataSource" ref="dataSource" />
+	</bean>
+	<bean id="MUPJDBC" class="org.dmp.core.db.jdbc.DaoImpl" scope="prototype">
+		<property name="jdbcTemplate" ref="jdbcTemplate" />
+	</bean>
+
+	<!-- Hibernate -->
+	<bean id="sessionFactory"
+		class="org.springframework.orm.hibernate4.LocalSessionFactoryBean">
+		<property name="dataSource" ref="dataSource" />
+		<property name="packagesToScan">
+			<list>
+				<value>org.dmp.pojo.**.*</value>
+				<value>org.dmp.module.**.*</value>
+			</list>
+		</property>
+		<property name="hibernateProperties">
+			<props>
+				<prop key="hibernate.dialect">org.dmp.core.mysql.dialect.MySQL5LocalDialect</prop>
+				<prop key="hibernate.connection.useUnicode">true</prop>
+                <prop key="hibernate.connection.characterEncoding">UTF-8</prop> 
+				<prop key="hibernate.show_sql">true</prop>
+				<prop key="hibernate.format_sql">true</prop>
+				<prop key="hibernate.hbm2ddl.auto">update</prop>  
+				<prop key="hibernate.query.substitutions">true 1, false 0</prop>
+				<prop key="hibernate.default_batch_fetch_size">16</prop>
+				<prop key="hibernate.max_fetch_depth">2</prop>
+				<prop key="hibernate.generate_statistics">true</prop>
+				<prop key="hibernate.bytecode.use_reflection_optimizer">true</prop>
+				<prop key="hibernate.cache.use_second_level_cache">true</prop>
+				<prop key="hibernate.cache.use_query_cache">true</prop>
+				<prop key="hibernate.cache.region.factory_class">org.hibernate.cache.EhCacheRegionFactory</prop>
+				<prop key="net.sf.ehcache.configurationResourceName">ehcache_hibernate.xml</prop>
+				<prop key="hibernate.cache.use_structured_entries">true</prop>
+				<prop key="hibernate.query.factory_class">org.hibernate.hql.internal.ast.ASTQueryTranslatorFactory
+				</prop>
+				<prop key="hibernate.cache.region.factory_class">org.hibernate.cache.ehcache.EhCacheRegionFactory
+				</prop>
+			</props>
+
+		</property>
+	</bean>
+	<bean id="DMPHibernate" class="org.dmp.core.db.hibernate.DaoImpl"
+		scope="prototype">
+		<property name="sessionFactory" ref="sessionFactory" />
+	</bean>
+	
+	
+	<!-- 开启注解事务 只对当前配置文件有效 -->
+	<tx:annotation-driven transaction-manager="txManager" />
+	<bean id="txManager"
+		class="org.springframework.orm.hibernate4.HibernateTransactionManager">
+		<property name="sessionFactory" ref="sessionFactory" />
+	</bean>
+
+	<!-- 开启AOP监听 只对当前配置文件有效 -->
+	<aop:aspectj-autoproxy expose-proxy="true" />
+	<aop:config expose-proxy="true">
+		<aop:pointcut expression="execution(* org.dmp.module..service..*.*(..))"
+			id="txPointcut" />
+		<aop:advisor advice-ref="txAdvice" pointcut-ref="txPointcut" />
+	</aop:config>
+	<tx:advice id="txAdvice" transaction-manager="txManager">
+		<tx:attributes>
+			<tx:method name="get*" propagation="REQUIRED" read-only="true" />
+			<tx:method name="set*" propagation="REQUIRED" />
+			<tx:method name="add*" propagation="REQUIRED" />
+			<tx:method name="edit*" propagation="REQUIRED" />
+			<tx:method name="del*" propagation="REQUIRED" />
+		</tx:attributes>
+	</tx:advice>
+
+
+	<bean id="log4jInitialization"
+		class="org.springframework.beans.factory.config.MethodInvokingFactoryBean">
+		<property name="targetClass" value="org.springframework.util.Log4jConfigurer" />
+		<property name="targetMethod" value="initLogging" />
+		<property name="arguments">
+			<list>
+				<value>classpath:log4j.xml</value>
+			</list>
+		</property>
+	</bean>
+
+	<!-- 配置spring-ehcache缓存管理器 -->
+	<bean id="defaultCacheManager"
+		class="org.springframework.cache.ehcache.EhCacheManagerFactoryBean">
+		<property name="configLocation">
+			<value>classpath:ehcache.xml</value>
+		</property>
+	</bean>
+	<!-- 配置一个简单的缓存工厂bean对象 -->
+	<bean id="statCache" class="org.springframework.cache.ehcache.EhCacheFactoryBean">
+		<property name="cacheManager">
+			<ref local="defaultCacheManager" />
+		</property>
+		<!-- 使用缓存 关联ehcache.xml中的缓存配置 -->
+		<property name="cacheName" value="statCache" />
+	</bean>
+
+	<!-- 配置一个缓存拦截器对象，处理具体的缓存业务 -->
+	<bean id="methodCacheInterceptor" class="org.dmp.util.MethodCacheInterceptor">
+		<property name="cache" ref="statCache" />
+	</bean>
+	
+	
+	<bean id="scheduler"
+        class="org.springframework.scheduling.quartz.SchedulerFactoryBean"  lazy-init="true" >
+     	<property name="dataSource">  
+            <ref bean="dataSource" />  
+        </property>
+        <property name="quartzProperties">  
+            <props>  
+                <prop key="org.quartz.scheduler.instanceName">KettlequartzScheduler</prop>  
+                <prop key="org.quartz.scheduler.instanceId">AUTO</prop>  
+                <prop key="org.quartz.threadPool.class">org.quartz.simpl.SimpleThreadPool</prop>  
+                <prop key="org.quartz.threadPool.threadCount">15</prop>  
+                <prop key="org.quartz.threadPool.threadPriority">5</prop>  
+                <prop key="org.quartz.jobStore.misfireThreshold">60000</prop>  
+                <!--<prop key="org.quartz.jobStore.class">org.quartz.impl.jdbcjobstore.JobStoreTX</prop>-->  
+                <prop key="org.quartz.jobStore.class">org.springframework.scheduling.quartz.LocalDataSourceJobStore</prop>
+                <prop key="org.quartz.jobStore.driverDelegateClass">org.quartz.impl.jdbcjobstore.StdJDBCDelegate</prop> 
+                <prop key="org.quartz.jobStore.selectWithLockSQL">SELECT * FROM {0}LOCKS WHERE LOCK_NAME = ? FOR UPDATE </prop>  
+                <prop key="org.quartz.jobStore.tablePrefix">td_qrtz_</prop>  
+                <prop key="org.quartz.jobStore.isClustered">true</prop>  
+                <prop key="org.quartz.jobStore.clusterCheckinInterval">20000</prop>  
+                <prop key="org.quartz.jobStore.useProperties">false</prop>
+            </props>  
+        </property>
+        <property name="applicationContextSchedulerContextKey"  value="applicationContext" />  
+        <property name="startupDelay" value="50"/>
+        <property name="autoStartup" value="true" />
+        <!-- QuartzScheduler 启动时更新己存在的Job，这样就不用每次修改targetObject后删除qrtz_job_details表对应记录了 --> 
+        <property name="overwriteExistingJobs" value="true"/>
+    </bean> 
+
+    <!--  运行次数记录-->    
+    <bean id="jobDetail" class="org.springframework.scheduling.quartz.JobDetailBean">        
+    	<!-- requestsRecovery属性为true，则当Quartz服务被中止后，再次启动任务时会尝试恢复执行之前未完成的所有任务    -->     
+    	<property name="requestsRecovery" value="true"/>        
+    	<!-- 标识job是持久的,删除触发器的时候不被删除         -->
+    	<property name="durability" value="true"/>        
+    	<property name="jobClass" value="org.dmp.module.admin.quartz.kettle.QuartzExecute"/>
+        <property name="volatility" value="false" />
+    </bean> 
+
+
+</beans>
+
+
+

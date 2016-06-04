@@ -1,0 +1,122 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE log4j:configuration SYSTEM "log4j.dtd">
+
+<log4j:configuration xmlns:log4j="http://jakarta.apache.org/log4j/" debug="false">
+
+	
+
+    <appender name="all" class="org.apache.log4j.DailyRollingFileAppender">
+		<param name="File" value="d:/data/tomcatlog/bass/all.log" />
+		<param name="DatePattern" value="'.'yyyy-MM-dd" />
+		<layout class="org.apache.log4j.PatternLayout">
+			<param name="ConversionPattern"
+				value="%d{yyyy-MM-dd HH:mm:ss,SSSS} [%-5p] {%c:%L} %n%m%n%n" />
+		</layout>
+	</appender>
+
+    <appender name="CONSOLE" class="org.apache.log4j.ConsoleAppender">
+        <param name="Target" value="System.out"/>
+        <param name="Threshold" value="INFO"/>
+        <layout class="org.apache.log4j.PatternLayout">
+            <param name="ConversionPattern" value="%-5p %d{yyyy-MM-dd HH:mm:ss,SSS} - %m%n"/>
+        </layout>
+    </appender>
+    <category name="org.pentaho">
+        <priority value="DEBUG"/>
+    </category>
+    <!--<category name="org.apache.commons.logging.simplelog.log.org.apache.commons.httpclient">-->
+        <!--<priority value="WARN"/>-->
+    <!--</category>-->
+    <!--<category name="org.apache.commons.logging.simplelog.log.org.apache.commons.httpclient.auth">-->
+        <!--<priority value="WARN"/>-->
+    <!--</category>-->
+
+	<!-- ERROR LOG -->
+	<appender name="error" class="org.apache.log4j.DailyRollingFileAppender">
+		<param name="File" value="d:/data/tomcatlog/bass/error.log" />
+		<param name="DatePattern" value="'.'yyyy-MM-dd" />
+		<layout class="org.apache.log4j.PatternLayout">
+			<param name="ConversionPattern" value="Date:%d{yyyy-MM-dd HH:mm:ss,SSSS}%n%m%n%n" />
+		</layout>
+		<filter class="org.apache.log4j.varia.LevelRangeFilter">
+			<param name="LevelMax" value="INFO" />
+			<param name="LevelMin" value="INFO" />
+		</filter>
+	</appender>
+
+	<!-- INFO LOG -->
+	<appender name="info" class="org.apache.log4j.DailyRollingFileAppender">
+		<param name="File" value="d:/data/tomcatlog/bass/info.log" />
+		<param name="DatePattern" value="'.'yyyy-MM-dd" />
+		<layout class="org.apache.log4j.PatternLayout">
+			<param name="ConversionPattern" value="Date:%d{yyyy-MM-dd HH:mm:ss,SSSS} %m%n" />
+		</layout>
+		<filter class="org.apache.log4j.varia.LevelRangeFilter">
+			<param name="LevelMax" value="INFO" />
+			<param name="LevelMin" value="INFO" />
+		</filter>
+	</appender>
+	
+	<appender name="sql" class="org.apache.log4j.DailyRollingFileAppender">
+		<param name="File" value="d:/data/tomcatlog/bass/sql.log" />
+		<param name="DatePattern" value="'.'yyyy-MM-dd" />
+		<layout class="org.apache.log4j.PatternLayout">
+			<param name="ConversionPattern" value="Date:%d{yyyy-MM-dd HH:mm:ss,SSSS} %m%n" />
+		</layout>
+		<filter class="org.apache.log4j.varia.LevelRangeFilter">
+			<param name="LevelMax" value="debug" />
+			<param name="LevelMin" value="debug" />
+		</filter>
+	</appender>	
+	
+	<appender name="hive" class="org.apache.log4j.DailyRollingFileAppender">
+		<param name="File" value="d:/data/tomcatlog/bass/hive.log" />
+		<param name="DatePattern" value="'.'yyyy-MM-dd" />
+		<layout class="org.apache.log4j.PatternLayout">
+			<param name="ConversionPattern" value="%d{ABSOLUTE} %5p %40.40c:%4L - %m%n" />
+		</layout>
+		
+	</appender>	
+	
+	<logger name="org.hibernate.SQL" additivity="false"> 
+		<level value="debug" /> 
+		<appender-ref ref="sql" />
+	</logger>	
+	<logger name="org.hibernate.type" additivity="false">
+		<level value="debug" /> 
+		<appender-ref ref="sql" />
+	</logger>	
+	
+	<logger name="org.springframework" additivity="false">
+		<level value="INFO" /> 
+		<appender-ref ref="hive" />
+	</logger>
+	
+	<logger name="org.apache.thrift.server" additivity="false">
+		<level value="OFF" /> 
+		<appender-ref ref="hive" />
+	</logger>
+
+	<logger name="hive.ql.metadata.Hive" additivity="false">
+		<level value="OFF" /> 
+		<appender-ref ref="hive" />
+	</logger>
+	
+	<logger name="org.datanucleus" additivity="false">
+		<level value="ERROR" /> 
+		<appender-ref ref="hive" />
+	</logger>
+
+    <logger name="DataNucleus" additivity="false">
+		<level value="OFF" /> 
+		<appender-ref ref="hive" />
+	</logger>
+	<root>
+		<priority value="INFO" />
+		<appender-ref ref="all" />
+		<appender-ref ref="error" />
+		<appender-ref ref="info" />
+        <appender-ref ref="CONSOLE"/>
+	</root>
+
+</log4j:configuration> 
